@@ -4,6 +4,24 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 
+use overload
+    '""' => \&stringify
+;
+
+sub import {
+    my $class = shift;
+    caller->storage_type($class->new(shift));
+}
+
+sub new {
+    my $class = shift;
+    bless {type => shift || '::DBI'}, $class;
+}
+
+sub stringify {
+    caller eq 'DBIx::Class::Schema::Loader' ? '::DBI' : shift->{type};
+}
+
 1;
 __END__
 
